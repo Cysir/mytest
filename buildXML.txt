@@ -1,0 +1,91 @@
+import java.io.File;
+import org.w3c.dom.*;
+import javax.xml.transform.*;
+import javax.xml.transform.dom.DOMSource;
+import javax.xml.transform.stream.StreamResult;
+import javax.xml.parsers.*;
+
+public class BuildXml {
+private Document document;
+
+public BuildXml(){
+	DocumentBuilderFactory factory=DocumentBuilderFactory.newInstance();
+	try{
+		
+		DocumentBuilder builder=factory.newDocumentBuilder();
+		document=builder.newDocument();
+	}
+	catch(Exception e){e.printStackTrace();}
+	//添加一个根节点
+	Element root= document.createElement("Goods");
+	document.appendChild(root);
+	//添加一行注释在根节点下面
+	Comment simple= document.createComment("AN XML Focument");
+	root.appendChild(simple);
+	//添加一个子节点到根节点下面
+	Node chElement = createContactNode(document);
+	
+	root.appendChild(chElement);
+	
+	
+	CDATASection cdat=document.createCDATASection("I CAN <,>,and ?");
+	root.appendChild(cdat);
+	try{
+		//获得DOM文档转化为XML文档文件的转换器
+		TransformerFactory tfactory=TransformerFactory.newInstance();
+		Transformer transformer=tfactory.newTransformer();
+		//将DOM对象转化为DOMSource对象，该对象表现为转化成别的表达形式的信息容器
+		DOMSource source=new DOMSource(document);
+		//获得一个StreamResult对象，是DOM文档转化成其他形式的文档的容器
+		//可以是XML文件 可以是HTML文件
+		StreamResult result=new StreamResult(new File("buildXml.xml"));
+		//调用API将DOM对象转化为XML对象
+		transformer.transform(source, result);
+		
+	}
+	catch(Exception e){
+		e.printStackTrace();
+	}
+	
+}
+
+public static void main(String[] args) {
+	new BuildXml();
+	System.out.println("生成成功");
+}
+
+private Node createContactNode(Document doc) {
+	System.out.print("sss");
+	// TODO Auto-generated method stub
+	Element contact=doc.createElement("Good");
+	Attr attr=doc.createAttribute("ID");
+	attr.setValue("10000");
+	contact.setAttributeNode(attr);
+	attr=doc.createAttribute("NAME");
+	attr.setValue("小米S");
+	contact.setAttributeNode(attr);
+	attr=doc.createAttribute("MONEY");
+	attr.setValue("1000");
+	contact.setAttributeNode(attr);
+	contact.appendChild(doc.createTextNode("商品"));
+    //多次重复提交属性 则相同的覆盖 不同的加上去
+	//多次重复提交内容者追加上去
+	attr=doc.createAttribute("ID");
+	attr.setValue("100f00");
+	contact.setAttributeNode(attr);
+	contact.appendChild(doc.createTextNode("商品"));
+	//首先创建一个节点 这个标签可以添加属性 或者 子标签 
+	
+//	
+//	Element nameElement=doc.createElement("NAME");
+//	nameElement.appendChild(doc.createTextNode("小米5"));
+//	contact.appendChild(nameElement);
+//	
+//	Element moneyElement=doc.createElement("price");
+//	moneyElement.appendChild(doc.createTextNode("1099"));
+//	contact.appendChild(moneyElement);
+	
+	return contact;
+	
+}
+}
